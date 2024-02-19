@@ -132,7 +132,7 @@
       const text = comment.dataset.text;
 
       comment.addEventListener('click', () => {
-        textInputElement.value = `QUOTE_BEGIN>${text}QUOTE_END`;
+        sanitizeHtml(textInputElement.value = `QUOTE_BEGIN>${text}QUOTE_END`);
         
       })
     }
@@ -172,6 +172,17 @@
     return htmlString.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;');
   }
 
+  nameInputElement.addEventListener('input', validation);
+  textInputElement.addEventListener('input', validation);
+
+  function validation() {
+    if (nameInputElement.value.trim() !== '') {
+    nameInputElement.classList.remove('error');
+    }
+    if (textInputElement.value.trim() !== '') {
+      textInputElement.classList.remove('error');
+    }
+  }
 
 
   buttonElement.addEventListener('click', () => {
@@ -179,22 +190,22 @@
     textInputElement.classList.remove('error');
     if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
       textInputElement.classList.add('error');
-      buttonElement.disabled = true;
       return;
     }
     else if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
       nameInputElement.classList.add('error');
       textInputElement.classList.add('error');
-      buttonElement.disabled = true;
       return;
     }
 
     if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
       nameInputElement.classList.add('error');
-      buttonElement.disabled = true;
       return;
     }
 
+    
+
+    
 
     const date = new Date();
     const options = {
