@@ -169,7 +169,7 @@
   }
 
   const sanitizeHtml = (htmlString) => {
-    return htmlString.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;');
+    return htmlString.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
   }
 
   nameInputElement.addEventListener('input', validation);
