@@ -53,19 +53,23 @@
 
 
 
+  
   const renderUsers = () => {
     const usersHtml = users.map((user, index) => {
-      return `<li class="comment">
+      return `<li data-text="${user.comment}\n${user.name}" class="comment">
           <div class="comment-header">
             <div>${user.name}</div>
             <div>${user.date}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">
-              ${user.comment}
+              ${user.comment.replaceAll('QUOTE_BEGIN', '<div class="quote">').replaceAll('QUOTE_END', '</div class="quote">')}
             </div>
           </div>
           <div class="comment-footer">
+            <div class="edit">
+              <button class="edit-button">Редактировать</button>
+            </div>
             <div class="likes">
               <span class="likes-counter">${user.likes}</span>
               <button data-like="${user.likes}" data-index="${index}" class="like-button ${users[index].isLiked ? '-active-like' : 'like-button'}"></button>
@@ -78,8 +82,10 @@
 
     initLikeButtonListeners();
     updateValue();
-
+    answerComment();
   };
+
+
 
 
   const initLikeButtonListeners = () => {
@@ -90,7 +96,8 @@
       const index = buttonElement.dataset.index;
       const counter = buttonElement.dataset.like;
 
-      buttonElement.addEventListener('click', () => {
+      buttonElement.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (users[index].isLiked === false) {
 
           const result = +counter + 1;
@@ -117,6 +124,26 @@
   renderUsers();
 
 
+
+
+  function answerComment() {
+    const commentsElements = document.querySelectorAll('.comment');
+
+    for (const comment of commentsElements) {
+      const text = comment.dataset.text;
+
+      comment.addEventListener('click', () => {
+        sanitizeHtml(textInputElement.value = `QUOTE_BEGIN>${text}QUOTE_END`);
+        
+      })
+    }
+  }
+
+
+
+
+  renderUsers();
+
   buttonElement.disabled = true;
 
   nameInputElement.addEventListener('input', updateValue);
@@ -132,7 +159,7 @@
 
   renderUsers();
 
-  nameInputElement.addEventListener('keyup', keyEvent);
+
   textInputElement.addEventListener('keyup', keyEvent);
 
   function keyEvent(e) {
@@ -142,6 +169,21 @@
 
   }
 
+  const sanitizeHtml = (htmlString) => {
+    return htmlString.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+  }
+
+  nameInputElement.addEventListener('input', validation);
+  textInputElement.addEventListener('input', validation);
+
+  function validation() {
+    if (nameInputElement.value.trim() !== '') {
+    nameInputElement.classList.remove('error');
+    }
+    if (textInputElement.value.trim() !== '') {
+      textInputElement.classList.remove('error');
+    }
+  }
 
 
   buttonElement.addEventListener('click', () => {
@@ -149,22 +191,22 @@
     textInputElement.classList.remove('error');
     if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
       textInputElement.classList.add('error');
-      buttonElement.disabled = true;
       return;
     }
     else if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
       nameInputElement.classList.add('error');
       textInputElement.classList.add('error');
-      buttonElement.disabled = true;
       return;
     }
 
     if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
       nameInputElement.classList.add('error');
-      buttonElement.disabled = true;
       return;
     }
 
+    
+
+    
 
     const date = new Date();
     const options = {
@@ -180,9 +222,9 @@
     const dateTime = date.toLocaleDateString('ru-RU', options) + " " + date.toLocaleTimeString('ru-RU', optionsTime);
 
     users.push({
-      name: nameInputElement.value,
+      name: sanitizeHtml(nameInputElement.value),
       date: dateTime,
-      comment: textInputElement.value,
+      comment: sanitizeHtml(textInputElement.value),
       likes: 0,
       isLiked: false,
     })
