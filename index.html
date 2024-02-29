@@ -56,7 +56,23 @@
     });
   });
 
-  let comments = [];
+  let comments = [
+    {
+      name: 'Глеб Фокин',
+      date: '12.02.22 12:18',
+      text: 'Это будет первый комментарий на этой странице',
+      likes: 3,
+      isLiked: false,
+
+    },
+    {
+      name: 'Варвара Н.',
+      date: '13.02.22 19:22',
+      text: 'Мне нравится как оформлена эта страница! ❤',
+      likes: 75,
+      isLiked: false,
+    },
+  ];
 
 
 
@@ -91,8 +107,6 @@
     updateValue();
     answerComment();
   };
-
-
 
 
 
@@ -182,7 +196,6 @@
     return htmlString.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
   }
 
-
   nameInputElement.addEventListener('input', validation);
   textInputElement.addEventListener('input', validation);
 
@@ -194,7 +207,6 @@
       textInputElement.classList.remove('error');
     }
   }
-
 
 
   buttonElement.addEventListener('click', () => {
@@ -268,12 +280,12 @@
         formElement.innerHTML = `<span>Комментарий добавляется...</span>`;
       } else {
         formElement.innerHTML = `<input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
-        <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
-          id="text-input"></textarea>
-        <div class="add-form-row">
-          <button class="add-form-button" id="add-button">Написать</button>
-          <button class="add-form-button" id="delete-button">Удалить комментарий</button>
-        </div>`;
+      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+      id="text-input"></textarea>
+      <div class="add-form-row">
+      <button class="add-form-button" id="add-button">Написать</button>
+      <button class="add-form-button" id="delete-button">Удалить комментарий</button>
+      </div>`;
 
         const buttonElement = document.getElementById('add-button');
         const nameInputElement = document.getElementById('name-input');
@@ -341,7 +353,6 @@
     textInputElement.value = '';
   });
 
-
   renderComments();
 
   // console.log("It works!");
@@ -351,25 +362,15 @@
 
 
 
-<!-- // const date = new Date();
-    // const options = {
-    //   year: '2-digit',
-    //   month: 'numeric',
-    //   day: 'numeric',
-    // };
-    // const optionsTime = {
-    //   hour: 'numeric',
-    //   minute: 'numeric',
-    // };
+<!-- const appComments = responseData.comments.map((comment) => {
+          
+  return {
+    name: comment.author.name,
+    date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+    text: comment.text,
+    likes: comment.likes,
+    isLiked: false,
+  };
+});
 
-    // const dateTime = date.toLocaleDateString('ru-RU', options) + date.toLocaleTimeString('ru-RU', optionsTime);
-
-    // comments.push({
-    //   name: sanitizeHtml(nameInputElement.value),
-    //   date: dateTime,
-    //   text: sanitizeHtml(textInputElement.value),
-    //   likes: 0,
-    //   isLiked: false,
-    // })
-
-    // renderComments(); -->
+comments = appComments; -->
