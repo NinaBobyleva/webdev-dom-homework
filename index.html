@@ -12,7 +12,7 @@
     <ul class="comments" id="list">
       <!-- Список рендерится из JS -->
     </ul>
-    <div class="add-form">
+    <div class="add-form" id="form">
       <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
       <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
         id="text-input"></textarea>
@@ -41,7 +41,7 @@
     let jsonPromise = response.json();
     jsonPromise.then((responseData) => {
       const appComments = responseData.comments.map((comment) => {
-        
+
         return {
           name: comment.author.name,
           date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
@@ -56,27 +56,11 @@
     });
   });
 
-  let comments = [
-    {
-      name: 'Глеб Фокин',
-      date: '12.02.22 12:18',
-      text: 'Это будет первый комментарий на этой странице',
-      likes: 3,
-      isLiked: false,
-
-    },
-    {
-      name: 'Варвара Н.',
-      date: '13.02.22 19:22',
-      text: 'Мне нравится как оформлена эта страница! ❤',
-      likes: 75,
-      isLiked: false,
-    },
-  ];
+  let comments = [];
 
 
 
-  
+
   const renderComments = () => {
     const commentsHtml = comments.map((comment, index) => {
       return `<li data-text="${comment.text}\n${comment.name}" class="comment">
@@ -107,6 +91,8 @@
     updateValue();
     answerComment();
   };
+
+
 
 
 
@@ -157,7 +143,7 @@
 
       comment.addEventListener('click', () => {
         sanitizeHtml(textInputElement.value = `QUOTE_BEGIN>${text}QUOTE_END`);
-        
+
       })
     }
   }
@@ -196,12 +182,13 @@
     return htmlString.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
   }
 
+
   nameInputElement.addEventListener('input', validation);
   textInputElement.addEventListener('input', validation);
 
   function validation() {
     if (nameInputElement.value.trim() !== '') {
-    nameInputElement.classList.remove('error');
+      nameInputElement.classList.remove('error');
     }
     if (textInputElement.value.trim() !== '') {
       textInputElement.classList.remove('error');
@@ -209,7 +196,9 @@
   }
 
 
+
   buttonElement.addEventListener('click', () => {
+
     nameInputElement.classList.remove('error');
     textInputElement.classList.remove('error');
     if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
@@ -227,56 +216,133 @@
       return;
     }
 
-    
 
-    fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-    method: "POST",
-    body: JSON.stringify({
-      name: sanitizeHtml(nameInputElement.value),
-      text: sanitizeHtml(textInputElement.value),
+
+    let isLoading = false;
+
+
+    isLoading = true;
+
+    fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
+      method: "POST",
+      body: JSON.stringify({
+        name: sanitizeHtml(nameInputElement.value),
+        text: sanitizeHtml(textInputElement.value),
       }),
     }).then((response) => {
+      renderComments();
       response.json().then((responseData) => {
         fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-        method: "GET",
+          method: "GET",
         }).then((response) => {
           response.json().then((responseData) => {
-            comments = comments;
+            const appComments = responseData.comments.map((comment) => {
+              return {
+                name: comment.author.name,
+                date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+                text: comment.text,
+                likes: comment.likes,
+                isLiked: false,
+              };
+            });
+            isLoading = false;
+            renderAddForm();
+
+
+            comments = appComments;
             renderComments();
+
           });
         });
       });
     });
 
-    
 
-    const date = new Date();
-    const options = {
-      year: '2-digit',
-      month: 'numeric',
-      day: 'numeric',
-    };
-    const optionsTime = {
-      hour: 'numeric',
-      minute: 'numeric',
-    };
 
-    const dateTime = date.toLocaleDateString('ru-RU', options) + date.toLocaleTimeString('ru-RU', optionsTime);
+    const formElement = document.getElementById('form');
 
-    comments.push({
-      name: sanitizeHtml(nameInputElement.value),
-      date: dateTime,
-      text: sanitizeHtml(textInputElement.value),
-      likes: 0,
-      isLiked: false,
-    })
 
-    renderComments();
+    function renderAddForm() {
+
+      if (isLoading) {
+        formElement.innerHTML = `<span>Комментарий добавляется...</span>`;
+      } else {
+        formElement.innerHTML = `<input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
+        <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+          id="text-input"></textarea>
+        <div class="add-form-row">
+          <button class="add-form-button" id="add-button">Написать</button>
+          <button class="add-form-button" id="delete-button">Удалить комментарий</button>
+        </div>`;
+
+        const buttonElement = document.getElementById('add-button');
+        const nameInputElement = document.getElementById('name-input');
+        const textInputElement = document.getElementById('text-input');
+
+        buttonElement.disabled = true;
+
+        nameInputElement.addEventListener('input', updateValue);
+        textInputElement.addEventListener('input', updateValue);
+
+        function updateValue() {
+          if (nameInputElement.value !== '' && textInputElement.value !== '') {
+            buttonElement.disabled = false;
+          } else {
+            buttonElement.disabled = true;
+          }
+        }
+
+        buttonElement.addEventListener('click', () => {
+
+          isLoading = true;
+
+          fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
+            method: "POST",
+            body: JSON.stringify({
+              name: sanitizeHtml(nameInputElement.value),
+              text: sanitizeHtml(textInputElement.value),
+            }),
+          }).then((response) => {
+            renderComments();
+            response.json().then((responseData) => {
+              fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
+                method: "GET",
+              }).then((response) => {
+                response.json().then((responseData) => {
+                  const appComments = responseData.comments.map((comment) => {
+                    return {
+                      name: comment.author.name,
+                      date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+                      text: comment.text,
+                      likes: comment.likes,
+                      isLiked: false,
+                    };
+                  });
+                  isLoading = false;
+                  renderAddForm();
+
+
+                  comments = appComments;
+                  renderComments();
+
+                });
+              });
+            });
+          });
+          renderAddForm();
+        });
+      }
+
+    }
+
+    renderAddForm();
+
     nameInputElement.value = '';
     textInputElement.value = '';
   });
 
 
+  renderComments();
 
   // console.log("It works!");
 </script>
@@ -285,15 +351,25 @@
 
 
 
-<!-- const appComments = responseData.comments.map((comment) => {
-          
-  return {
-    name: comment.author.name,
-    date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-    text: comment.text,
-    likes: comment.likes,
-    isLiked: false,
-  };
-});
+<!-- // const date = new Date();
+    // const options = {
+    //   year: '2-digit',
+    //   month: 'numeric',
+    //   day: 'numeric',
+    // };
+    // const optionsTime = {
+    //   hour: 'numeric',
+    //   minute: 'numeric',
+    // };
 
-comments = appComments; -->
+    // const dateTime = date.toLocaleDateString('ru-RU', options) + date.toLocaleTimeString('ru-RU', optionsTime);
+
+    // comments.push({
+    //   name: sanitizeHtml(nameInputElement.value),
+    //   date: dateTime,
+    //   text: sanitizeHtml(textInputElement.value),
+    //   likes: 0,
+    //   isLiked: false,
+    // })
+
+    // renderComments(); -->
