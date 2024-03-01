@@ -33,28 +33,28 @@
   const deleteButtonElement = document.getElementById('delete-button');
   const listElement = document.getElementById('list');
 
-  let fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
+  fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
     method: "GET",
-  });
+  })
+  .then((response) => {
+    return response.json();
+  })
+  .then((responseData) => {
+    const appComments = responseData.comments.map((comment) => {
 
-  fetchPromise.then((response) => {
-    let jsonPromise = response.json();
-    jsonPromise.then((responseData) => {
-      const appComments = responseData.comments.map((comment) => {
-
-        return {
-          name: comment.author.name,
-          date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-          text: comment.text,
-          likes: comment.likes,
-          isLiked: false,
-        };
-      });
-
-      comments = appComments;
-      renderComments();
+      return {
+        name: comment.author.name,
+        date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+        text: comment.text,
+        likes: comment.likes,
+        isLiked: false,
+      };
     });
+
+    comments = appComments;
+    renderComments();
   });
+  
 
   let comments = [
     {
@@ -241,33 +241,37 @@
         name: sanitizeHtml(nameInputElement.value),
         text: sanitizeHtml(textInputElement.value),
       }),
-    }).then((response) => {
+    })
+    .then((response) => {
       renderComments();
-      response.json().then((responseData) => {
-        fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-          method: "GET",
-        }).then((response) => {
-          response.json().then((responseData) => {
-            const appComments = responseData.comments.map((comment) => {
-              return {
-                name: comment.author.name,
-                date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-                text: comment.text,
-                likes: comment.likes,
-                isLiked: false,
-              };
-            });
-            isLoading = false;
-            renderAddForm();
-
-
-            comments = appComments;
-            renderComments();
-
-          });
-        });
+      return response.json();
+    })
+    .then((responseData) => {
+      return fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
+        method: "GET",
       });
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((responseData) => {
+      const appComments = responseData.comments.map((comment) => {
+        return {
+          name: comment.author.name,
+          date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+          text: comment.text,
+          likes: comment.likes,
+          isLiked: false,
+        };
+      });
+      isLoading = false;
+      renderAddForm();
+
+      comments = appComments;
+      renderComments();
     });
+  
+      
 
 
 
@@ -314,37 +318,39 @@
               name: sanitizeHtml(nameInputElement.value),
               text: sanitizeHtml(textInputElement.value),
             }),
-          }).then((response) => {
+          })
+          .then((response) => {
             renderComments();
-            response.json().then((responseData) => {
-              fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-                method: "GET",
-              }).then((response) => {
-                response.json().then((responseData) => {
-                  const appComments = responseData.comments.map((comment) => {
-                    return {
-                      name: comment.author.name,
-                      date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-                      text: comment.text,
-                      likes: comment.likes,
-                      isLiked: false,
-                    };
-                  });
-                  isLoading = false;
-                  renderAddForm();
-
-
-                  comments = appComments;
-                  renderComments();
-
-                });
+            return response.json();
+          })
+          .then((responseData) => {
+            return fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
+              method: "GET",
               });
+          })
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseData) => {
+            const appComments = responseData.comments.map((comment) => {
+              return {
+                name: comment.author.name,
+                date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+                text: comment.text,
+                likes: comment.likes,
+                isLiked: false,
+              };
             });
+            isLoading = false;
+            renderAddForm();
+
+            comments = appComments;
+            renderComments();
           });
+
           renderAddForm();
         });
       }
-
     }
 
     renderAddForm();
@@ -355,22 +361,7 @@
 
   renderComments();
 
-  // console.log("It works!");
+  console.log("It works!");
 </script>
 
 </html>
-
-
-
-<!-- const appComments = responseData.comments.map((comment) => {
-          
-  return {
-    name: comment.author.name,
-    date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-    text: comment.text,
-    likes: comment.likes,
-    isLiked: false,
-  };
-});
-
-comments = appComments; -->
