@@ -9,9 +9,11 @@
 
 <body>
   <div class="container">
+    <span class="hide" id="load">Пожалуйста подождите, загружаю комментарии...</span>
     <ul class="comments" id="list">
       <!-- Список рендерится из JS -->
     </ul>
+    <span class="hide load" id="load-comment">Комментарий загружается...</span>
     <div class="add-form" id="form">
       <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
       <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
@@ -32,50 +34,40 @@
   const buttonElement = document.getElementById('add-button');
   const deleteButtonElement = document.getElementById('delete-button');
   const listElement = document.getElementById('list');
+  const loadElement = document.getElementById('load');
+  const loadCommentElement = document.getElementById('load-comment');
+  const formElement = document.getElementById('form');
 
-  fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-    method: "GET",
-  })
-  .then((response) => {
-    return response.json();
-  })
-  .then((responseData) => {
-    const appComments = responseData.comments.map((comment) => {
+  const fetchAddRenderComments = () => {
+    
+    loadElement.classList.add('show');
+    
+    return fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
+      method: "GET",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseData) => {
+        const appComments = responseData.comments.map((comment) => {
 
-      return {
-        name: comment.author.name,
-        date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-        text: comment.text,
-        likes: comment.likes,
-        isLiked: false,
-      };
-    });
+          return {
+            name: comment.author.name,
+            date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+            text: comment.text,
+            likes: comment.likes,
+            isLiked: false,
+          };
+        });
+        loadElement.classList.remove('show');
+        comments = appComments;
+        renderComments();
+      });
+  }
 
-    comments = appComments;
-    renderComments();
-  });
-  
+  fetchAddRenderComments();
 
-  let comments = [
-    {
-      name: 'Глеб Фокин',
-      date: '12.02.22 12:18',
-      text: 'Это будет первый комментарий на этой странице',
-      likes: 3,
-      isLiked: false,
-
-    },
-    {
-      name: 'Варвара Н.',
-      date: '13.02.22 19:22',
-      text: 'Мне нравится как оформлена эта страница! ❤',
-      likes: 75,
-      isLiked: false,
-    },
-  ];
-
-
-
+  let comments = [];
 
   const renderComments = () => {
     const commentsHtml = comments.map((comment, index) => {
@@ -108,7 +100,7 @@
     answerComment();
   };
 
-
+  fetchAddRenderComments();
 
 
   const initLikeButtonListeners = () => {
@@ -167,21 +159,6 @@
 
   renderComments();
 
-  buttonElement.disabled = true;
-
-  nameInputElement.addEventListener('input', updateValue);
-  textInputElement.addEventListener('input', updateValue);
-
-  function updateValue() {
-    if (nameInputElement.value !== '' && textInputElement.value !== '') {
-      buttonElement.disabled = false;
-    } else {
-      buttonElement.disabled = true;
-    }
-  }
-
-  renderComments();
-
 
   textInputElement.addEventListener('keyup', keyEvent);
 
@@ -209,6 +186,23 @@
   }
 
 
+
+  buttonElement.disabled = true;
+
+  nameInputElement.addEventListener('input', updateValue);
+  textInputElement.addEventListener('input', updateValue);
+
+  function updateValue() {
+    if (nameInputElement.value !== '' && textInputElement.value !== '') {
+      return buttonElement.disabled = false;
+    } else {
+      return buttonElement.disabled = true;
+    }
+  }
+
+  renderComments();
+
+
   buttonElement.addEventListener('click', () => {
 
     nameInputElement.classList.remove('error');
@@ -228,132 +222,83 @@
       return;
     }
 
+    // let isLoading = false;
+    
+    loadCommentElement.classList.add('show');
+    formElement.classList.add('hide');
 
-
-    let isLoading = false;
-
-
-    isLoading = true;
-
-    fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-      method: "POST",
-      body: JSON.stringify({
-        name: sanitizeHtml(nameInputElement.value),
-        text: sanitizeHtml(textInputElement.value),
-      }),
-    })
-    .then((response) => {
-      renderComments();
-      return response.json();
-    })
-    .then((responseData) => {
-      return fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-        method: "GET",
-      });
-    })
-    .then((response) => {
-      return response.json();
-    })
-    .then((responseData) => {
-      const appComments = responseData.comments.map((comment) => {
-        return {
-          name: comment.author.name,
-          date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-          text: comment.text,
-          likes: comment.likes,
-          isLiked: false,
-        };
-      });
-      isLoading = false;
-      renderAddForm();
-
-      comments = appComments;
-      renderComments();
-    });
-  
+    const addComments = () => {
+      // isLoading = true;
       
-
-
-
-    const formElement = document.getElementById('form');
-
-
-    function renderAddForm() {
-
-      if (isLoading) {
-        formElement.innerHTML = `<span>Комментарий добавляется...</span>`;
-      } else {
-        formElement.innerHTML = `<input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
-      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
-      id="text-input"></textarea>
-      <div class="add-form-row">
-      <button class="add-form-button" id="add-button">Написать</button>
-      <button class="add-form-button" id="delete-button">Удалить комментарий</button>
-      </div>`;
-
-        const buttonElement = document.getElementById('add-button');
-        const nameInputElement = document.getElementById('name-input');
-        const textInputElement = document.getElementById('text-input');
-
-        buttonElement.disabled = true;
-
-        nameInputElement.addEventListener('input', updateValue);
-        textInputElement.addEventListener('input', updateValue);
-
-        function updateValue() {
-          if (nameInputElement.value !== '' && textInputElement.value !== '') {
-            buttonElement.disabled = false;
-          } else {
-            buttonElement.disabled = true;
-          }
-        }
-
-        buttonElement.addEventListener('click', () => {
-
-          isLoading = true;
-
-          fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-            method: "POST",
-            body: JSON.stringify({
-              name: sanitizeHtml(nameInputElement.value),
-              text: sanitizeHtml(textInputElement.value),
-            }),
-          })
-          .then((response) => {
-            renderComments();
-            return response.json();
-          })
-          .then((responseData) => {
-            return fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
-              method: "GET",
-              });
-          })
-          .then((response) => {
-            return response.json();
-          })
-          .then((responseData) => {
-            const appComments = responseData.comments.map((comment) => {
-              return {
-                name: comment.author.name,
-                date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-                text: comment.text,
-                likes: comment.likes,
-                isLiked: false,
-              };
-            });
-            isLoading = false;
-            renderAddForm();
-
-            comments = appComments;
-            renderComments();
-          });
-
-          renderAddForm();
-        });
-      }
+      return fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
+        method: "POST",
+        body: JSON.stringify({
+          name: sanitizeHtml(nameInputElement.value),
+          text: sanitizeHtml(textInputElement.value),
+        }),
+      })
+        .then((response) => {
+          // renderComments();
+          return response.json();
+        })
+        .then((responseData) => {
+          return fetchAddRenderComments();
+        }).
+        then((response) => {
+          loadCommentElement.classList.remove('show');
+          formElement.classList.remove('hide');
+          return fetchAddRenderComments();
+          // isLoading = false;
+          // renderAddForm();
+        })
     }
+    addComments();
 
-    renderAddForm();
+    
+
+
+    // const formElement = document.getElementById('form');
+
+
+    // function renderAddForm() {
+
+    //   if (isLoading) {
+    //     formElement.innerHTML = `<span>Комментарий добавляется...</span>`;
+    //   } else {
+    //     formElement.innerHTML = `<input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
+    //       <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+    //       id="text-input"></textarea>
+    //       <div class="add-form-row">
+    //       <button class="add-form-button" id="add-button">Написать</button>
+    //       <button class="add-form-button" id="delete-button">Удалить комментарий</button>
+    //       </div>`;
+
+    //     const buttonElement = document.getElementById('add-button');
+    //     const nameInputElement = document.getElementById('name-input');
+    //     const textInputElement = document.getElementById('text-input');
+
+    //     buttonElement.disabled = true;
+
+    //     nameInputElement.addEventListener('input', updateValue);
+    //     textInputElement.addEventListener('input', updateValue);
+
+    //     function updateValue() {
+    //       if (nameInputElement.value !== '' && textInputElement.value !== '') {
+    //         return buttonElement.disabled = false;
+    //       } else {
+    //         return buttonElement.disabled = true;
+    //       }
+    //     }
+
+    //     buttonElement.addEventListener('click', () => {
+    //       let isLoading = false;
+
+    //       addComments();
+    //     });
+    //   }
+    // }
+
+    // renderAddForm();
 
     nameInputElement.value = '';
     textInputElement.value = '';
