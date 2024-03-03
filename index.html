@@ -42,8 +42,6 @@
 
   const fetchAddRenderComments = () => {
 
-    
-
     return fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
       method: "GET",
     })
@@ -262,11 +260,9 @@
           return response.json();
         })
         .then((responseData) => {
-          // loadElement.classList.remove('show');
           return fetchAddRenderComments();
         }).
         then((response) => {
-          // loadElement.classList.remove('show');
           loadCommentElement.classList.remove('show');
           formElement.classList.remove('hide');
           return fetchAddRenderComments();
