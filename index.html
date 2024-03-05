@@ -265,7 +265,6 @@
       })
         .then((response) => {
           if (response.status === 400) {
-            alert('Имя и комментарий не должны быть короче 3 символов');
             throw new Error('Введено меньше трех символов');
           }
           if (response.status === 500) {
@@ -287,14 +286,22 @@
           return fetchAddRenderComments();
         })
         .catch((error) => {
+          if (error.message === 'Сервер сломался') {
+            console.warn(error);
+            // alert('Сервер сломался, попробуй позже');
+            return addComments();
+          }
+          if (error.message === 'Введено меньше трех символов') {
+            loadCommentElement.classList.remove('show');
+            formElement.classList.remove('hide');
+            console.warn(error);
+            return alert('Имя и комментарий не должны быть короче 3 символов');
+          }
           buttonElement.disabled = false;
           loadCommentElement.classList.remove('show');
           formElement.classList.remove('hide');
           console.warn(error);
-          // alert("Кажется, что-то пошло не так, попробуй позже");
-          if (error.message === 'Сервер сломался') {
-            return addComments();
-          }
+          alert("Кажется, у вас сломался интернет, попробуйте позже");
         })
     }
     addComments();
