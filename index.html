@@ -240,24 +240,40 @@
       return;
     }
 
-    // let isLoading = false;
+    let nameElement;
+    let textElement;
+    nameInputElement.addEventListener('input', saveData);
+    textInputElement.addEventListener('input', saveData);
+
+    function saveData() {
+      nameElement = nameInputElement.value;
+      textElement = textInputElement.value;
+    }
+    saveData();
 
     loadCommentElement.classList.add('show');
     formElement.classList.add('hide');
 
     const addComments = () => {
-      // isLoading = true;
-
       return fetch("https://wedev-api.sky.pro/api/v1/nina-bobyleva/comments", {
         method: "POST",
         body: JSON.stringify({
           name: sanitizeHtml(nameInputElement.value),
           text: sanitizeHtml(textInputElement.value),
+          forceError: true,
         }),
       })
         .then((response) => {
-          // renderComments();
-          return response.json();
+          if (response.status === 400) {
+            throw new Error('Введено меньше трех символов');
+          }
+          if (response.status === 500) {
+            throw new Error('Сервер сломался');
+          } else {
+            return response.json();
+          }
+          nameInputElement.value = nameElement;
+          textInputElement.value = textElement;
         })
         .then((responseData) => {
           return fetchAddRenderComments();
@@ -265,61 +281,30 @@
         then((response) => {
           loadCommentElement.classList.remove('show');
           formElement.classList.remove('hide');
+          nameInputElement.value = '';
+          textInputElement.value = '';
           return fetchAddRenderComments();
-          // isLoading = false;
-          // renderAddForm();
+        })
+        .catch((error) => {
+          if (error.message === 'Сервер сломался') {
+            console.warn(error);
+            // alert('Сервер сломался, попробуй позже');
+            return addComments();
+          }
+          if (error.message === 'Введено меньше трех символов') {
+            loadCommentElement.classList.remove('show');
+            formElement.classList.remove('hide');
+            console.warn(error);
+            return alert('Имя и комментарий не должны быть короче 3 символов');
+          }
+          buttonElement.disabled = false;
+          loadCommentElement.classList.remove('show');
+          formElement.classList.remove('hide');
+          console.warn(error);
+          alert("Кажется, у вас сломался интернет, попробуйте позже");
         })
     }
     addComments();
-
-
-
-
-    // const formElement = document.getElementById('form');
-
-
-    // function renderAddForm() {
-
-    //   if (isLoading) {
-    //     formElement.innerHTML = `<span>Комментарий добавляется...</span>`;
-    //   } else {
-    //     formElement.innerHTML = `<input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
-    //       <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
-    //       id="text-input"></textarea>
-    //       <div class="add-form-row">
-    //       <button class="add-form-button" id="add-button">Написать</button>
-    //       <button class="add-form-button" id="delete-button">Удалить комментарий</button>
-    //       </div>`;
-
-    //     const buttonElement = document.getElementById('add-button');
-    //     const nameInputElement = document.getElementById('name-input');
-    //     const textInputElement = document.getElementById('text-input');
-
-    //     buttonElement.disabled = true;
-
-    //     nameInputElement.addEventListener('input', updateValue);
-    //     textInputElement.addEventListener('input', updateValue);
-
-    //     function updateValue() {
-    //       if (nameInputElement.value !== '' && textInputElement.value !== '') {
-    //         return buttonElement.disabled = false;
-    //       } else {
-    //         return buttonElement.disabled = true;
-    //       }
-    //     }
-
-    //     buttonElement.addEventListener('click', () => {
-    //       let isLoading = false;
-
-    //       addComments();
-    //     });
-    //   }
-    // }
-
-    // renderAddForm();
-
-    nameInputElement.value = '';
-    textInputElement.value = '';
   });
 
   renderComments();
