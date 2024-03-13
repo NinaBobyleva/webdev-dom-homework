@@ -25,7 +25,5 @@ export const postTodo = ({name, text}) => {
           } else {
             return response.json();
           }
-          nameInputElement.value = nameElement;
-          textInputElement.value = textElement;
         })
 }

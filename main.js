@@ -163,12 +163,11 @@ buttonElement.addEventListener('click', () => {
 
     validation();
 
-    let nameElement;
-    let textElement;
+
     nameInputElement.addEventListener('input', saveData);
     textInputElement.addEventListener('input', saveData);
 
-    function saveData() {
+    function saveData(nameElement, textElement) {
         nameElement = nameInputElement.value;
         textElement = textInputElement.value;
     }
@@ -178,10 +177,10 @@ buttonElement.addEventListener('click', () => {
     formElement.classList.add('hide');
 
     const addComments = () => {
-        postTodo({ name: nameInputElement.value, text: textInputElement.value }).then((responseData) => {
+        postTodo({ name: nameInputElement.value, text: textInputElement.value }).then(() => {
             return fetchAddRenderComments();
         }).
-            then((response) => {
+            then(() => {
                 loadCommentElement.classList.remove('show');
                 formElement.classList.remove('hide');
                 nameInputElement.value = '';
