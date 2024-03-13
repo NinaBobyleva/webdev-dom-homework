@@ -1,5 +1,6 @@
 import { getTodos, postTodo } from "./api.js";
 import { addLike } from "./likes.js";
+import { rendering } from "./render.js";
 
 const nameInputElement = document.getElementById('name-input');
 const textInputElement = document.getElementById('text-input');
@@ -14,20 +15,20 @@ loadElement.classList.add('show');
 
 const fetchAddRenderComments = () => {
 
-getTodos().then((responseData) => {
-    const appComments = responseData.comments.map((comment) => {
+    getTodos().then((responseData) => {
+        const appComments = responseData.comments.map((comment) => {
 
-        return {
-        name: comment.author.name,
-        date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-        text: comment.text,
-        likes: comment.likes,
-        isLiked: false,
-        };
-    });
-    loadElement.classList.remove('show');
-    comments = appComments;
-    renderComments();
+            return {
+            name: comment.author.name,
+            date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+            text: comment.text,
+            likes: comment.likes,
+            isLiked: false,
+            };
+        });
+        loadElement.classList.remove('show');
+        comments = appComments;
+        renderComments();
     });
 }
 
@@ -36,33 +37,8 @@ fetchAddRenderComments();
 let comments = [];
 
 const renderComments = () => {
-    const commentsHtml = comments.map((comment, index) => {
-        return `<li data-text="${comment.text}\n${comment.name}" class="comment">
-            <div class="comment-header">
-            <div>${comment.name}</div>
-            <div>${comment.date}</div>
-            </div>
-            <div class="comment-body">
-            <div class="comment-text">
-                ${comment.text.replaceAll('QUOTE_BEGIN', '<div class="quote">').replaceAll('QUOTE_END', '</div class="quote">')}
-            </div>
-            </div>
-            <div class="comment-footer">
-            <div class="edit">
-                <button class="edit-button">Редактировать</button>
-            </div>
-            <div class="likes">
-                <span class="likes-counter">${comment.likes}</span>
-                <button data-like="${comment.likes}" data-index="${index}" class="like-button ${comments[index].isLiked ? '-active-like' : 'like-button'}"></button>
-            </div>
-            </div>
-        </li>`;
-    }).join('');
-
-
-    listElement.innerHTML = commentsHtml;
-
-
+    
+    rendering(comments, listElement);
 
     initLikeButtonListeners();
     updateValue();
