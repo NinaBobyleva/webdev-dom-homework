@@ -16,20 +16,24 @@ loadElement.classList.add('show');
 const fetchAddRenderComments = () => {
 
     getTodos().then((responseData) => {
-        const appComments = responseData.comments.map((comment) => {
+            const appComments = responseData.comments.map((comment) => {
 
-            return {
-                name: comment.author.name,
-                date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
-                text: comment.text,
-                likes: comment.likes,
-                isLiked: false,
-            };
-        });
-        loadElement.classList.remove('show');
-        comments = appComments;
-        renderComments();
-    });
+                return {
+                    name: comment.author.name,
+                    date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+                    text: comment.text,
+                    likes: comment.likes,
+                    isLiked: false,
+                };
+            });
+            loadElement.classList.remove('show');
+            comments = appComments;
+            renderComments();
+        })
+        .catch((error) => {
+            loadElement.textContent = 'Неудалось загрузить комментарии...';
+            console.warn(error);
+        })
 }
 
 fetchAddRenderComments();
@@ -48,15 +52,6 @@ const renderComments = () => {
 fetchAddRenderComments();
 
 
-function delay(interval = 300) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve();
-        }, interval);
-    });
-}
-
-
 const initLikeButtonListeners = () => {
     const buttonElements = document.querySelectorAll('.like-button');
 
@@ -67,17 +62,9 @@ const initLikeButtonListeners = () => {
 
         buttonElement.addEventListener('click', (e) => {
             e.stopPropagation();
-            buttonElement.classList.add('-loading-like');
 
-            delay(2000).then(() => {
-
-                addLike(comments, index, counter);
-
-                renderComments();
-
-            });
-
-
+            addLike(comments, index, counter);
+            renderComments();
         })
 
     }
@@ -131,37 +118,39 @@ function updateValue() {
 
 renderComments();
 
+nameInputElement.addEventListener('input', inputValidation);
+textInputElement.addEventListener('input', inputValidation);
+
+function inputValidation() {
+    nameInputElement.classList.remove('error');
+    textInputElement.classList.remove('error');
+    if (nameInputElement.value.trim() !== '') {
+        return nameInputElement.classList.remove('error');
+    }
+    if (textInputElement.value.trim() !== '') {
+        return textInputElement.classList.remove('error');
+    }
+}
+
+inputValidation();
+
 
 buttonElement.addEventListener('click', () => {
-    nameInputElement.addEventListener('input', validation);
-    textInputElement.addEventListener('input', validation);
 
-    function validation() {
-        nameInputElement.classList.remove('error');
-        textInputElement.classList.remove('error');
-        if (nameInputElement.value.trim() !== '') {
-            nameInputElement.classList.remove('error');
-        }
-        if (textInputElement.value.trim() !== '') {
-            textInputElement.classList.remove('error');
-        }
-        if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
-            textInputElement.classList.add('error');
-            return;
-        }
-        else if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
-            nameInputElement.classList.add('error');
-            textInputElement.classList.add('error');
-            return;
-        }
-    
-        if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
-            nameInputElement.classList.add('error');
-            return;
-        }
+    if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
+        textInputElement.classList.add('error');
+        return;
+    }
+    else if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
+        nameInputElement.classList.add('error');
+        textInputElement.classList.add('error');
+        return;
     }
 
-    validation();
+    if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
+        nameInputElement.classList.add('error');
+        return;
+    }
 
 
     nameInputElement.addEventListener('input', saveData);
@@ -177,7 +166,7 @@ buttonElement.addEventListener('click', () => {
     formElement.classList.add('hide');
 
     const addComments = () => {
-        postTodo({ name: nameInputElement.value, text: textInputElement.value }).then(() => {
+        postTodo({ name: sanitizeHtml(nameInputElement.value), text: sanitizeHtml(textInputElement.value) }).then(() => {
             return fetchAddRenderComments();
         }).
             then(() => {
