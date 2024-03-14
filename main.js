@@ -2,6 +2,7 @@ import { getTodos, postTodo } from "./api.js";
 import { addLike } from "./likes.js";
 import { keyEvent, updateValue, inputAdd, saveData } from "./listeners.js";
 import { rendering } from "./render.js";
+import { inputValidation } from "./validation.js";
 
 export const nameInputElement = document.getElementById('name-input');
 export const textInputElement = document.getElementById('text-input');
@@ -46,7 +47,7 @@ const renderComments = () => {
     rendering(comments, listElement);
 
     initLikeButtonListeners();
-    // updateValue();
+    updateValue();
     answerComment();
 };
 
@@ -99,10 +100,10 @@ const sanitizeHtml = (htmlString) => {
 }
 
 
-// buttonElement.disabled = true;
+buttonElement.disabled = true;
 
-// nameInputElement.addEventListener('input', updateValue);
-// textInputElement.addEventListener('input', updateValue);
+nameInputElement.addEventListener('input', updateValue);
+textInputElement.addEventListener('input', updateValue);
 
 
 renderComments();
@@ -117,20 +118,6 @@ buttonElement.addEventListener('click', () => {
 
     nameInputElement.classList.remove('error');
     textInputElement.classList.remove('error');
-
-    const inputValidation = () => {
-        if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
-            textInputElement.classList.add('error');
-            return;
-        } else if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
-            nameInputElement.classList.add('error');
-            textInputElement.classList.add('error');
-            return;
-        } else if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
-            nameInputElement.classList.add('error');
-            return;
-        }  
-    }
 
     inputValidation();
 
