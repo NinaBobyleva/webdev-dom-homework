@@ -11,9 +11,6 @@ export const rendering = (comments, listElement) => {
             </div>
             </div>
             <div class="comment-footer">
-            <div class="edit">
-                <button class="edit-button">Редактировать</button>
-            </div>
             <div class="likes">
                 <span class="likes-counter">${comment.likes}</span>
                 <button data-like="${comment.likes}" data-index="${index}" class="like-button ${comments[index].isLiked ? '-active-like' : 'like-button'}"></button>
