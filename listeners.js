@@ -9,7 +9,7 @@ export function keyEvent(e) {
 }
 
 export function updateValue() {
-    if (nameInputElement.value !== '' && textInputElement.value !== '') {
+    if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() !== '') {
         return buttonElement.disabled = false;
     } else {
         return buttonElement.disabled = true;

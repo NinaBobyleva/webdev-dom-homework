@@ -1,4 +1,6 @@
-export const rendering = (comments, listElement) => {
+import { listElement } from "./main.js";
+
+export const rendering = (comments) => {
     const commentsHtml = comments.map((comment, index) => {
         return `<li data-text="${comment.text}\n${comment.name}" class="comment">
             <div class="comment-header">

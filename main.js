@@ -2,16 +2,15 @@ import { getTodos, postTodo } from "./api.js";
 import { addLike } from "./likes.js";
 import { keyEvent, updateValue, inputAdd, saveData } from "./listeners.js";
 import { rendering } from "./render.js";
-import { inputValidation } from "./validation.js";
 
 export const nameInputElement = document.getElementById('name-input');
 export const textInputElement = document.getElementById('text-input');
 export const buttonElement = document.getElementById('add-button');
-// const deleteButtonElement = document.getElementById('delete-button');
-const listElement = document.getElementById('list');
+export const listElement = document.getElementById('list');
 const loadElement = document.getElementById('load');
 const loadCommentElement = document.getElementById('load-comment');
 const formElement = document.getElementById('form');
+// const deleteButtonElement = document.getElementById('delete-button');
 
 loadElement.classList.add('show');
 
@@ -44,7 +43,7 @@ let comments = [];
 
 const renderComments = () => {
 
-    rendering(comments, listElement);
+    rendering(comments);
 
     initLikeButtonListeners();
     updateValue();
@@ -119,7 +118,19 @@ buttonElement.addEventListener('click', () => {
     nameInputElement.classList.remove('error');
     textInputElement.classList.remove('error');
 
-    inputValidation();
+    if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
+        textInputElement.classList.add('error');
+        return;
+    }
+    if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
+        nameInputElement.classList.add('error');
+        textInputElement.classList.add('error');
+        return;
+    }
+    if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
+        nameInputElement.classList.add('error');
+        return;
+    }
 
 
     nameInputElement.addEventListener('input', saveData);
