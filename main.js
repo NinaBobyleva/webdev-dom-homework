@@ -1,10 +1,11 @@
 import { getTodos, postTodo } from "./api.js";
 import { addLike } from "./likes.js";
+import { keyEvent, updateValue, inputAdd, saveData } from "./listeners.js";
 import { rendering } from "./render.js";
 
-const nameInputElement = document.getElementById('name-input');
-const textInputElement = document.getElementById('text-input');
-const buttonElement = document.getElementById('add-button');
+export const nameInputElement = document.getElementById('name-input');
+export const textInputElement = document.getElementById('text-input');
+export const buttonElement = document.getElementById('add-button');
 // const deleteButtonElement = document.getElementById('delete-button');
 const listElement = document.getElementById('list');
 const loadElement = document.getElementById('load');
@@ -45,7 +46,7 @@ const renderComments = () => {
     rendering(comments, listElement);
 
     initLikeButtonListeners();
-    updateValue();
+    // updateValue();
     answerComment();
 };
 
@@ -92,76 +93,52 @@ renderComments();
 
 textInputElement.addEventListener('keyup', keyEvent);
 
-function keyEvent(e) {
-    if (e.code === 'Enter') {
-        buttonElement.dispatchEvent(new Event('click'));
-    }
-}
 
 const sanitizeHtml = (htmlString) => {
     return htmlString.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 }
 
 
-buttonElement.disabled = true;
+// buttonElement.disabled = true;
 
-nameInputElement.addEventListener('input', updateValue);
-textInputElement.addEventListener('input', updateValue);
+// nameInputElement.addEventListener('input', updateValue);
+// textInputElement.addEventListener('input', updateValue);
 
-function updateValue() {
-    if (nameInputElement.value !== '' && textInputElement.value !== '') {
-        return buttonElement.disabled = false;
-    } else {
-        return buttonElement.disabled = true;
-    }
-}
 
 renderComments();
 
-nameInputElement.addEventListener('input', inputValidation);
-textInputElement.addEventListener('input', inputValidation);
+nameInputElement.addEventListener('input', inputAdd);
+textInputElement.addEventListener('input', inputAdd);
 
-function inputValidation() {
-    nameInputElement.classList.remove('error');
-    textInputElement.classList.remove('error');
-    if (nameInputElement.value.trim() !== '') {
-        return nameInputElement.classList.remove('error');
-    }
-    if (textInputElement.value.trim() !== '') {
-        return textInputElement.classList.remove('error');
-    }
-}
 
-inputValidation();
 
 
 buttonElement.addEventListener('click', () => {
 
-    if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
-        textInputElement.classList.add('error');
-        return;
-    }
-    else if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
-        nameInputElement.classList.add('error');
-        textInputElement.classList.add('error');
-        return;
+    nameInputElement.classList.remove('error');
+    textInputElement.classList.remove('error');
+
+    const inputValidation = () => {
+        if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
+            textInputElement.classList.add('error');
+            return;
+        } else if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
+            nameInputElement.classList.add('error');
+            textInputElement.classList.add('error');
+            return;
+        } else if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
+            nameInputElement.classList.add('error');
+            return;
+        }  
     }
 
-    if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
-        nameInputElement.classList.add('error');
-        return;
-    }
+    inputValidation();
 
 
     nameInputElement.addEventListener('input', saveData);
     textInputElement.addEventListener('input', saveData);
 
-    function saveData(nameElement, textElement) {
-        nameElement = nameInputElement.value;
-        textElement = textInputElement.value;
-    }
-    saveData();
-
+    
     loadCommentElement.classList.add('show');
     formElement.classList.add('hide');
 
