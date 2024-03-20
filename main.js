@@ -1,6 +1,5 @@
 import { getTodos, postTodo } from "./api.js";
-import { addLike } from "./likes.js";
-import { keyEvent, updateValue, inputAdd, saveData } from "./listeners.js";
+import { keyEvent, updateValue, inputAdd, addCommentButton, initLikeButtonListeners, answerComment } from "./listeners.js";
 import { rendering } from "./render.js";
 
 export const nameInputElement = document.getElementById('name-input');
@@ -10,7 +9,7 @@ export const listElement = document.getElementById('list');
 const loadElement = document.getElementById('load');
 const loadCommentElement = document.getElementById('load-comment');
 const formElement = document.getElementById('form');
-// const deleteButtonElement = document.getElementById('delete-button');
+
 
 loadElement.classList.add('show');
 
@@ -39,9 +38,9 @@ const fetchAddRenderComments = () => {
 
 fetchAddRenderComments();
 
-let comments = [];
+export let comments = [];
 
-const renderComments = () => {
+export const renderComments = () => {
 
     rendering(comments);
 
@@ -49,46 +48,6 @@ const renderComments = () => {
     updateValue();
     answerComment();
 };
-
-fetchAddRenderComments();
-
-
-const initLikeButtonListeners = () => {
-    const buttonElements = document.querySelectorAll('.like-button');
-
-    for (const buttonElement of buttonElements) {
-
-        const index = buttonElement.dataset.index;
-        const counter = buttonElement.dataset.like;
-
-        buttonElement.addEventListener('click', (e) => {
-            e.stopPropagation();
-
-            addLike(comments, index, counter);
-            renderComments();
-        })
-
-    }
-
-}
-
-renderComments();
-
-
-function answerComment() {
-    const commentsElements = document.querySelectorAll('.comment');
-
-    for (const comment of commentsElements) {
-        const text = comment.dataset.text;
-
-        comment.addEventListener('click', () => {
-            sanitizeHtml(textInputElement.value = `QUOTE_BEGIN>${text}QUOTE_END`);
-
-        })
-    }
-}
-
-renderComments();
 
 
 textInputElement.addEventListener('keyup', keyEvent);
@@ -105,73 +64,45 @@ nameInputElement.addEventListener('input', updateValue);
 textInputElement.addEventListener('input', updateValue);
 
 
-renderComments();
-
 nameInputElement.addEventListener('input', inputAdd);
 textInputElement.addEventListener('input', inputAdd);
 
 
+addCommentButton();
 
-
-buttonElement.addEventListener('click', () => {
-
-    nameInputElement.classList.remove('error');
-    textInputElement.classList.remove('error');
-
-    if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
-        textInputElement.classList.add('error');
-        return;
-    }
-    if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
-        nameInputElement.classList.add('error');
-        textInputElement.classList.add('error');
-        return;
-    }
-    if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
-        nameInputElement.classList.add('error');
-        return;
-    }
-
-
-    nameInputElement.addEventListener('input', saveData);
-    textInputElement.addEventListener('input', saveData);
-
-    
+export const addComments = () => {
     loadCommentElement.classList.add('show');
     formElement.classList.add('hide');
 
-    const addComments = () => {
-        postTodo({ name: sanitizeHtml(nameInputElement.value), text: sanitizeHtml(textInputElement.value) }).then(() => {
+    postTodo({ name: sanitizeHtml(nameInputElement.value), text: sanitizeHtml(textInputElement.value) }).then(() => {
+        return fetchAddRenderComments();
+    }).
+        then(() => {
+            loadCommentElement.classList.remove('show');
+            formElement.classList.remove('hide');
+            nameInputElement.value = '';
+            textInputElement.value = '';
             return fetchAddRenderComments();
-        }).
-            then(() => {
-                loadCommentElement.classList.remove('show');
-                formElement.classList.remove('hide');
-                nameInputElement.value = '';
-                textInputElement.value = '';
-                return fetchAddRenderComments();
-            })
-            .catch((error) => {
-                if (error.message === 'Сервер сломался') {
-                    console.warn(error);
-                    // alert('Сервер сломался, попробуй позже');
-                    return addComments();
-                }
-                if (error.message === 'Введено меньше трех символов') {
-                    loadCommentElement.classList.remove('show');
-                    formElement.classList.remove('hide');
-                    console.warn(error);
-                    return alert('Имя и комментарий не должны быть короче 3 символов');
-                }
-                buttonElement.disabled = false;
+        })
+        .catch((error) => {
+            if (error.message === 'Сервер сломался') {
+                console.warn(error);
+                // alert('Сервер сломался, попробуй позже');
+                return addComments();
+            }
+            if (error.message === 'Введено меньше трех символов') {
                 loadCommentElement.classList.remove('show');
                 formElement.classList.remove('hide');
                 console.warn(error);
-                alert("Кажется, у вас сломался интернет, попробуйте позже");
-            })
-    }
-    addComments();
-});
+                return alert('Имя и комментарий не должны быть короче 3 символов');
+            }
+            buttonElement.disabled = false;
+            loadCommentElement.classList.remove('show');
+            formElement.classList.remove('hide');
+            console.warn(error);
+            alert("Кажется, у вас сломался интернет, попробуйте позже");
+        })
+}
 
 renderComments();
 
