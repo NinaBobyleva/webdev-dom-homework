@@ -1,5 +1,7 @@
-import { buttonElement, nameInputElement, textInputElement, comments, renderComments, addComments } from "./main.js";
+import { comments, renderComments, addComments } from "./main.js";
+import { buttonElement, nameInputElement, textInputElement } from "./render.js";
 import { addLike } from "./likes.js";
+// import { rendering } from "./render.js";
 
 export const initLikeButtonListeners = () => {
     const buttonElements = document.querySelectorAll('.like-button');
@@ -40,6 +42,7 @@ export function answerComment() {
 }
 
 export function updateValue() {
+    // rendering(comments);
     if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() !== '') {
         return buttonElement.disabled = false;
     } else {

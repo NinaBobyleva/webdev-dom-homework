@@ -1,15 +1,24 @@
 import { getTodos, postTodo } from "./api.js";
 import { keyEvent, updateValue, inputAdd, addCommentButton, initLikeButtonListeners, answerComment } from "./listeners.js";
-import { rendering } from "./render.js";
+import { rendering, buttonElement, nameInputElement, textInputElement, formElement, loadCommentElement, loadElement } from "./render.js";
 
-export const nameInputElement = document.getElementById('name-input');
-export const textInputElement = document.getElementById('text-input');
-export const buttonElement = document.getElementById('add-button');
-export const listElement = document.getElementById('list');
-const loadElement = document.getElementById('load');
-const loadCommentElement = document.getElementById('load-comment');
-const formElement = document.getElementById('form');
 
+// export const listElement = document.getElementById('list');
+
+
+
+export let comments = [];
+
+export const renderComments = () => {
+
+    rendering(comments);
+
+    initLikeButtonListeners();
+    updateValue();
+    answerComment();
+};
+
+renderComments();
 
 loadElement.classList.add('show');
 
@@ -37,17 +46,6 @@ const fetchAddRenderComments = () => {
 }
 
 fetchAddRenderComments();
-
-export let comments = [];
-
-export const renderComments = () => {
-
-    rendering(comments);
-
-    initLikeButtonListeners();
-    updateValue();
-    answerComment();
-};
 
 
 textInputElement.addEventListener('keyup', keyEvent);

@@ -1,4 +1,12 @@
-import { listElement } from "./main.js";
+
+export const appElement = document.getElementById('app');
+
+export let buttonElement;
+export let nameInputElement;
+export let textInputElement;
+export let formElement;
+export let loadElement;
+export let loadCommentElement;
 
 export const rendering = (comments) => {
     const commentsHtml = comments.map((comment, index) => {
@@ -19,7 +27,36 @@ export const rendering = (comments) => {
             </div>
             </div>
         </li>`;
-    }).join(''); 
+    }).join('');
+
+    const formHtml =
+        `<span class="hide" id="load">Пожалуйста подождите, загружаю комментарии...</span>
+    <ul class="comments" id="list">
+      ${commentsHtml}
+    </ul>
+    <span class="hide load" id="load-comment">Чтобы добавить комментарий, <a
+        href="renderLogin.js">авторизуйтесь</a></span>
+    <div class="add-form" id="form">
+      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
+      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
+        id="text-input"></textarea>
+      <div class="add-form-row">
+        <button class="add-form-button" id="add-button">Написать</button>
+        <button class="add-form-button" id="delete-button">Удалить комментарий</button>
+      </div>
+      </div>`;
+
+    appElement.innerHTML = formHtml;
+
+
+    nameInputElement = document.getElementById('name-input');
+    textInputElement = document.getElementById('text-input');
+    buttonElement = document.getElementById('add-button');
+    loadElement = document.getElementById('load');
+    loadCommentElement = document.getElementById('load-comment');
+    formElement = document.getElementById('form');
+
     
-    listElement.innerHTML = commentsHtml;
 }
+
+// renderComments();
