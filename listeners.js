@@ -1,6 +1,6 @@
-import { comments, sanitizeHtml } from "./main.js";
-import { buttonElement, nameInputElement, formElement, renderComments, textInputElement } from "./render.js";
-import { addLike } from "./likes.js";
+import { sanitizeHtml } from "./main.js";
+import { buttonElement, nameInputElement, textInputElement } from "./render.js";
+// import { addLike } from "./likes.js";
 
 
 export const initLikeButtonListeners = () => {
@@ -13,10 +13,9 @@ export const initLikeButtonListeners = () => {
         likeButtonElement.addEventListener('click', (e) => {
             e.stopPropagation();
 
-            addLike(comments, index, counter);
-            renderComments(comments);
-            // loadCommentElement.classList.add('show');
-            // formElement.classList.add('hide');
+            // addLike(comments, index, counter);
+            // renderComments(comments);
+            
         })
     }
 

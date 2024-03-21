@@ -1,7 +1,6 @@
 import { login, setToken, setName } from "./api.js";
 import { comments } from "./main.js";
 import { renderComments } from "./render.js";
-import { initLikeButtonListeners } from "./listeners.js";
 
 export const renderLoginForm = () => {
   const appElement = document.getElementById('app');
@@ -31,7 +30,6 @@ export const renderLoginForm = () => {
       })
       .then((response) => {
         renderComments(comments);
-        // initLikeButtonListeners();
         return response;
       })
   })

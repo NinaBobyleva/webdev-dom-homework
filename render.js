@@ -62,6 +62,7 @@ export const renderComments = (comments) => {
     formElement = document.getElementById('form');
     buttonLog = document.getElementById('log');
 
+    initLikeButtonListeners();
     answerComment();
     updateValue();
 
