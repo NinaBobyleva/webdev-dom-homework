@@ -1,5 +1,5 @@
 import { sanitizeHtml } from "./main.js";
-import { updateValue, keyEvent, inputAdd } from "./listeners.js";
+import { updateValue, keyEvent, inputAdd, answerComment, initLikeButtonListeners } from "./listeners.js";
 import { renderLoginForm } from "./renderLogin.js";
 import { getTodos, name, postTodo } from "./api.js";
 
@@ -12,7 +12,7 @@ export let loadElement;
 export let loadCommentElement;
 export let buttonLog;
 
-export const rendering = (comments) => {
+export const renderComments = (comments) => {
     const appElement = document.getElementById('app');
     const commentsHtml = comments.map((comment, index) => {
         return `<li data-text="${comment.text}\n${comment.name}" class="comment">
@@ -62,6 +62,9 @@ export const rendering = (comments) => {
     formElement = document.getElementById('form');
     buttonLog = document.getElementById('log');
 
+    answerComment();
+    updateValue();
+
     buttonLog.addEventListener('click', () => {
         renderLoginForm();
         formElement.classList.remove('hide');
@@ -77,6 +80,7 @@ export const rendering = (comments) => {
 
     nameInputElement.addEventListener('input', updateValue);
     textInputElement.addEventListener('input', updateValue);
+
 
     buttonElement.addEventListener('click', () => {
         nameInputElement.classList.remove('error');
@@ -130,7 +134,7 @@ export const rendering = (comments) => {
                         nameInputElement.value = '';
                         textInputElement.value = '';
                         comments = appComments;
-                        rendering(comments);
+                        renderComments(comments);
                     })
                 })
                 .then(() => {

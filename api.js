@@ -56,7 +56,10 @@ export const login = ({ login, password }) => {
       }),
     })
       .then((response) => {
-        console.log(response);
+        if (response.status === 400) {
+          alert('Данные не верны');
+          throw new Error('Данные не верны');
+        }
         return response.json();
       })
 }

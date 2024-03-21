@@ -1,10 +1,11 @@
 import { login, setToken, setName } from "./api.js";
 import { comments } from "./main.js";
-import { rendering } from "./render.js";
+import { renderComments } from "./render.js";
+import { initLikeButtonListeners } from "./listeners.js";
 
 export const renderLoginForm = () => {
-    const appElement = document.getElementById('app');
-    const loginHtml = `<div class="add-form" id="login">
+  const appElement = document.getElementById('app');
+  const loginHtml = `<div class="add-form" id="login">
     <h2>Форма ввода</h2>
     <input type="text" class="login-form-name" placeholder="Введите ваш логин" id="login-input" />
     <input type="password" class="add-form-text login-form-password" placeholder="Введите ваш пароль" rows="4"
@@ -15,22 +16,23 @@ export const renderLoginForm = () => {
     </div>
     </div>`;
 
-    appElement.innerHTML = loginHtml;
+  appElement.innerHTML = loginHtml;
 
-    const loginButtonElement = document.getElementById('login-button');
-    const loginInputElement = document.getElementById('login-input');
-    const loginPasswordElement = document.getElementById('password-input');
-    loginButtonElement.addEventListener('click', () => {
-        login({ login: loginInputElement.value, password: loginPasswordElement.value,})
-        .then((responseData) => {
-          console.log(responseData);
-            setToken(responseData.user.token);
-            setName(responseData.user.name);
-            return responseData;
-        })
-        .then((response) => {
-            rendering(comments);
-            return response;
-        })
-    })
+  const loginButtonElement = document.getElementById('login-button');
+  const loginInputElement = document.getElementById('login-input');
+  const loginPasswordElement = document.getElementById('password-input');
+  loginButtonElement.addEventListener('click', () => {
+    login({ login: loginInputElement.value, password: loginPasswordElement.value, })
+      .then((responseData) => {
+        console.log(responseData);
+        setToken(responseData.user.token);
+        setName(responseData.user.name);
+        return responseData;
+      })
+      .then((response) => {
+        renderComments(comments);
+        // initLikeButtonListeners();
+        return response;
+      })
+  })
 }
