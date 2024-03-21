@@ -1,5 +1,8 @@
+import { sanitizeHtml } from "./main.js";
+import { updateValue, keyEvent, inputAdd } from "./listeners.js";
+import { renderLoginForm } from "./renderLogin.js";
+import { getTodos, name, postTodo } from "./api.js";
 
-export const appElement = document.getElementById('app');
 
 export let buttonElement;
 export let nameInputElement;
@@ -7,8 +10,10 @@ export let textInputElement;
 export let formElement;
 export let loadElement;
 export let loadCommentElement;
+export let buttonLog;
 
 export const rendering = (comments) => {
+    const appElement = document.getElementById('app');
     const commentsHtml = comments.map((comment, index) => {
         return `<li data-text="${comment.text}\n${comment.name}" class="comment">
             <div class="comment-header">
@@ -34,10 +39,10 @@ export const rendering = (comments) => {
     <ul class="comments" id="list">
       ${commentsHtml}
     </ul>
-    <span class="hide load" id="load-comment">Чтобы добавить комментарий, <a
-        href="renderLogin.js">авторизуйтесь</a></span>
+    <span class="hide load" id="load-comment">Чтобы добавить комментарий,
+    <a href="#" id="log">авторизуйтесь</a></span>
     <div class="add-form" id="form">
-      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
+      <input type="text" class="add-form-name" value=${name} disabled id="name-input" readonly/>
       <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
         id="text-input"></textarea>
       <div class="add-form-row">
@@ -55,8 +60,102 @@ export const rendering = (comments) => {
     loadElement = document.getElementById('load');
     loadCommentElement = document.getElementById('load-comment');
     formElement = document.getElementById('form');
+    buttonLog = document.getElementById('log');
 
-    
+    buttonLog.addEventListener('click', () => {
+        renderLoginForm();
+        formElement.classList.remove('hide');
+    })
+
+
+    nameInputElement.addEventListener('input', inputAdd);
+    textInputElement.addEventListener('input', inputAdd);
+
+    textInputElement.addEventListener('keyup', keyEvent);
+
+    buttonElement.disabled = true;
+
+    nameInputElement.addEventListener('input', updateValue);
+    textInputElement.addEventListener('input', updateValue);
+
+    buttonElement.addEventListener('click', () => {
+        nameInputElement.classList.remove('error');
+        textInputElement.classList.remove('error');
+
+        if (nameInputElement.value.trim() !== '' && textInputElement.value.trim() === '') {
+            textInputElement.classList.add('error');
+            return;
+        }
+        if (nameInputElement.value.trim() === '' && textInputElement.value.trim() === '') {
+            nameInputElement.classList.add('error');
+            textInputElement.classList.add('error');
+            return;
+        }
+        if (textInputElement.value.trim() !== '' && nameInputElement.value.trim() === '') {
+            nameInputElement.classList.add('error');
+            return;
+        }
+
+        nameInputElement.addEventListener('input', saveData);
+        textInputElement.addEventListener('input', saveData);
+
+        function saveData(nameElement, textElement) {
+            nameElement = nameInputElement.value;
+            textElement = textInputElement.value;
+        }
+
+
+        loadCommentElement.classList.add('show');
+        loadCommentElement.textContent = "Комментарий добавляется...";
+        formElement.classList.add('hide');
+
+        const addComments = () => {
+            return postTodo({
+                name: sanitizeHtml(nameInputElement.value),
+                text: sanitizeHtml(textInputElement.value)
+            })
+                .then(() => {
+                    getTodos().then((responseData) => {
+                        const appComments = responseData.comments.map((comment) => {
+                            return {
+                                name: comment.author.name,
+                                date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+                                text: comment.text,
+                                likes: comment.likes,
+                                isLiked: false,
+                            };
+                        });
+                        loadCommentElement.classList.remove('show');
+                        formElement.classList.remove('hide');
+                        nameInputElement.value = '';
+                        textInputElement.value = '';
+                        comments = appComments;
+                        rendering(comments);
+                    })
+                })
+                .then(() => {
+
+                })
+                .catch((error) => {
+                    if (error.message === 'Сервер сломался') {
+                        console.warn(error);
+                        // alert('Сервер сломался, попробуй позже');
+                        return addComments();
+                    }
+                    if (error.message === 'Введено меньше трех символов') {
+                        loadCommentElement.classList.remove('show');
+                        formElement.classList.remove('hide');
+                        console.warn(error);
+                        return alert('Имя и комментарий не должны быть короче 3 символов');
+                    }
+                    buttonElement.disabled = false;
+                    loadCommentElement.classList.remove('show');
+                    formElement.classList.remove('hide');
+                    console.warn(error);
+                    alert("Кажется, у вас сломался интернет, попробуйте позже");
+                })
+
+        }
+        addComments();
+    });
 }
-
-// renderComments();
