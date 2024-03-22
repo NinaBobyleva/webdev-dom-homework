@@ -1,6 +1,6 @@
-import { login, setToken, setName } from "./api.js";
+import { login, setToken, setName, setLike } from "./api.js";
 import { comments } from "./main.js";
-import { renderComments } from "./render.js";
+import { rendering } from "./render.js";
 
 export const renderLoginForm = () => {
   const appElement = document.getElementById('app');
@@ -26,11 +26,12 @@ export const renderLoginForm = () => {
         console.log(responseData);
         setToken(responseData.user.token);
         setName(responseData.user.name);
+        setLike(responseData.user._id);
+        console.log(responseData.user._id);
         return responseData;
       })
-      .then((response) => {
-        renderComments(comments);
-        return response;
+      .then(() => {
+        rendering(comments);
       })
   })
 }

@@ -12,7 +12,7 @@ export let loadElement;
 export let loadCommentElement;
 export let buttonLog;
 
-export const renderComments = (comments) => {
+export const rendering = (comments) => {
     const appElement = document.getElementById('app');
     const commentsHtml = comments.map((comment, index) => {
         return `<li data-text="${comment.text}\n${comment.name}" class="comment">
@@ -28,7 +28,7 @@ export const renderComments = (comments) => {
             <div class="comment-footer">
             <div class="likes">
                 <span class="likes-counter">${comment.likes}</span>
-                <button data-like="${comment.likes}" data-index="${index}" class="like-button ${comments[index].isLiked ? '-active-like' : 'like-button'}"></button>
+                <button data-like="${comment.likes}" data-index="${index}" class="like-button ${comments.isLiked ? '-active-like' : 'like-button'}"></button>
             </div>
             </div>
         </li>`;
@@ -53,7 +53,6 @@ export const renderComments = (comments) => {
 
     appElement.innerHTML = formHtml;
 
-
     nameInputElement = document.getElementById('name-input');
     textInputElement = document.getElementById('text-input');
     buttonElement = document.getElementById('add-button');
@@ -62,9 +61,13 @@ export const renderComments = (comments) => {
     formElement = document.getElementById('form');
     buttonLog = document.getElementById('log');
 
-    initLikeButtonListeners();
+    // const index = likeButtonElement.dataset.index;
+    // const counter = likeButtonElement.dataset.like;
+
     answerComment();
     updateValue();
+    initLikeButtonListeners();
+    
 
     buttonLog.addEventListener('click', () => {
         renderLoginForm();
@@ -123,11 +126,12 @@ export const renderComments = (comments) => {
                     getTodos().then((responseData) => {
                         const appComments = responseData.comments.map((comment) => {
                             return {
+                                id: comment.id,
                                 name: comment.author.name,
                                 date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
                                 text: comment.text,
                                 likes: comment.likes,
-                                isLiked: false,
+                                isLiked: comment.isLiked,
                             };
                         });
                         loadCommentElement.classList.remove('show');
@@ -135,7 +139,7 @@ export const renderComments = (comments) => {
                         nameInputElement.value = '';
                         textInputElement.value = '';
                         comments = appComments;
-                        renderComments(comments);
+                        rendering(comments);
                     })
                 })
                 .then(() => {

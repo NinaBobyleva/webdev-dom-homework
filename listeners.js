@@ -1,21 +1,27 @@
-import { sanitizeHtml } from "./main.js";
-import { buttonElement, nameInputElement, textInputElement } from "./render.js";
-// import { addLike } from "./likes.js";
+import { sanitizeHtml, comments } from "./main.js";
+import { buttonElement, nameInputElement, textInputElement, rendering, formElement, loadCommentElement } from "./render.js";
+import { postLike } from "./api.js";
+
 
 
 export const initLikeButtonListeners = () => {
     const likeButtonElements = document.querySelectorAll('.like-button');
-
+    
     for (const likeButtonElement of likeButtonElements) {
-        
-        const index = likeButtonElement.dataset.index;
-        const counter = likeButtonElement.dataset.like;
+
         likeButtonElement.addEventListener('click', (e) => {
             e.stopPropagation();
-
-            // addLike(comments, index, counter);
-            // renderComments(comments);
             
+            postLike().then((data) => {
+                console.log(data);
+                rendering(comments);
+            })
+              .catch((error) => {
+                formElement.classList.add('hide');
+                loadCommentElement.classList.add('show');
+                // alert('Лайк можно поставить после регистрации');
+                console.warn(error);
+            })
         })
     }
 
