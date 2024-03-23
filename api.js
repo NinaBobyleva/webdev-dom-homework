@@ -5,7 +5,7 @@ export let token;
 export let name;
 export let id;
 
-console.log(id);
+// console.log(id);
 
 export const setToken = (newToken) => {
   token = newToken;
@@ -13,10 +13,10 @@ export const setToken = (newToken) => {
 export const setName = (newName) => {
   name = newName;
 }
-export const setLike = (newId) => {
-  id = newId;
-  console.log(id);
-}
+// export const setLike = (newId) => {
+//   id = newId;
+//   console.log(id);
+// }
 
 
 
@@ -73,11 +73,10 @@ export const login = ({ login, password }) => {
     })
 }
 
-export const postLike = () => {
+export const postLike = (id) => {
   console.log(id);
   return fetch(`${todoURL}/comments/${id}/toggle-like`, {
-    method: "POST",
-    id, 
+    method: "POST", 
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -86,9 +85,9 @@ export const postLike = () => {
       console.log(response);
       if (response.status === 401) {
         throw new Error('Не авторизован');
+      } else {
+        return response.json();
       }
-      return response.json();
-
     })
 
 }

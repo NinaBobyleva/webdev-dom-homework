@@ -1,19 +1,19 @@
 import { getTodos } from "./api.js";
+// import { initLikeButtonListeners } from "./listeners.js";
 import { rendering, formElement, loadCommentElement, loadElement } from "./render.js";
 
 
 export let comments = [];
 
-export const renderComments = () => {
-
-    rendering(comments);
-      
+export const setComments = (newComments) => {
+    comments = newComments;
 }
 
-export const fetchAddRenderComments = () => {
-
+export const fetchAddComments = () => {
+    loadElement.classList.add('show');
+    formElement.classList.add('hide');
     getTodos().then((responseData) => {
-
+        
         const appComments = responseData.comments.map((comment) => {
             return {
                 id: comment.id,
@@ -25,17 +25,22 @@ export const fetchAddRenderComments = () => {
             };
         });
         comments = appComments;
-        renderComments();
-        loadCommentElement.classList.add('show');
-        formElement.classList.add('hide');
+        rendering(comments);
+        formElement.classList.add('hide'); 
+        loadCommentElement.classList.remove('hide');
     })
-        .catch((error) => {
-            loadElement.textContent = 'Неудалось загрузить комментарии...';
-            console.warn(error);
-        })
-        renderComments();
-    loadElement.classList.add('show');
-    formElement.classList.add('hide');
+    .catch((error) => {
+        loadElement.textContent = 'Неудалось загрузить комментарии...';
+        console.warn(error);
+    })
+}
+
+export const fetchAddRenderComments = () => {
+    
+    rendering(comments);
+    
+    fetchAddComments();
+    
 }
 
 

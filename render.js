@@ -14,7 +14,7 @@ export let buttonLog;
 
 export const rendering = (comments) => {
     const appElement = document.getElementById('app');
-    const commentsHtml = comments.map((comment, index) => {
+    const commentsHtml = comments.map((comment) => {
         return `<li data-text="${comment.text}\n${comment.name}" class="comment">
             <div class="comment-header">
             <div>${comment.name}</div>
@@ -28,7 +28,7 @@ export const rendering = (comments) => {
             <div class="comment-footer">
             <div class="likes">
                 <span class="likes-counter">${comment.likes}</span>
-                <button data-like="${comment.likes}" data-index="${index}" class="like-button ${comments.isLiked ? '-active-like' : 'like-button'}"></button>
+                <button data-like="${comment.likes}" data-id="${comment.id}" class="like-button ${comment.isLiked ? '-active-like' : 'like-button'}"></button>
             </div>
             </div>
         </li>`;
@@ -63,15 +63,16 @@ export const rendering = (comments) => {
 
     // const index = likeButtonElement.dataset.index;
     // const counter = likeButtonElement.dataset.like;
-
+    initLikeButtonListeners();
+    formElement.classList.remove('hide');
+    loadCommentElement.classList.add('hide');
     answerComment();
     updateValue();
-    initLikeButtonListeners();
     
 
     buttonLog.addEventListener('click', () => {
         renderLoginForm();
-        formElement.classList.remove('hide');
+        // formElement.classList.remove('hide');
     })
 
 
@@ -113,7 +114,7 @@ export const rendering = (comments) => {
         }
 
 
-        loadCommentElement.classList.add('show');
+        // loadCommentElement.classList.add('show');
         loadCommentElement.textContent = "Комментарий добавляется...";
         formElement.classList.add('hide');
 
@@ -142,9 +143,6 @@ export const rendering = (comments) => {
                         rendering(comments);
                     })
                 })
-                .then(() => {
-
-                })
                 .catch((error) => {
                     if (error.message === 'Сервер сломался') {
                         console.warn(error);
@@ -163,8 +161,8 @@ export const rendering = (comments) => {
                     console.warn(error);
                     alert("Кажется, у вас сломался интернет, попробуйте позже");
                 })
-
         }
+        
         addComments();
     });
 }
