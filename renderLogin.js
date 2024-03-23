@@ -26,8 +26,6 @@ export const renderLoginForm = () => {
         console.log(responseData);
         setToken(responseData.user.token);
         setName(responseData.user.name);
-        // setLike(responseData.user._id);
-        // console.log(responseData.user._id);
         return responseData;
       })
       .then(() => {

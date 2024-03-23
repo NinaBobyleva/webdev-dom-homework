@@ -1,6 +1,6 @@
-import { comments, fetchAddComments, setComments } from "./main.js";
+import { comments, setComments } from "./main.js";
 import { buttonElement, nameInputElement, textInputElement, rendering, formElement, loadCommentElement } from "./render.js";
-import { getTodos, id, postLike } from "./api.js";
+import { getTodos, postLike } from "./api.js";
 import { sanitizeHtml } from "./sanitize.js";
 
 
@@ -27,17 +27,14 @@ export const initLikeButtonListeners = () => {
                             isLiked: comment.isLiked,
                         };
                     });
-                    // newComments = appComments;
                     setComments(appComments)
                     rendering(comments);
                 })
-                // fetchAddComments();
-                rendering(comments);
             })
             .catch((error) => {
                 formElement.classList.add('hide');
                 loadCommentElement.classList.add('show');
-                // alert('Лайк можно поставить после регистрации');
+                alert('Лайк можно поставить после регистрации');
                 console.warn(error);
             })
         })   

@@ -61,8 +61,7 @@ export const rendering = (comments) => {
     formElement = document.getElementById('form');
     buttonLog = document.getElementById('log');
 
-    // const index = likeButtonElement.dataset.index;
-    // const counter = likeButtonElement.dataset.like;
+    
     initLikeButtonListeners();
     formElement.classList.remove('hide');
     loadCommentElement.classList.add('hide');
@@ -72,7 +71,6 @@ export const rendering = (comments) => {
 
     buttonLog.addEventListener('click', () => {
         renderLoginForm();
-        // formElement.classList.remove('hide');
     })
 
 
@@ -114,7 +112,7 @@ export const rendering = (comments) => {
         }
 
 
-        // loadCommentElement.classList.add('show');
+        loadCommentElement.classList.add('show');
         loadCommentElement.textContent = "Комментарий добавляется...";
         formElement.classList.add('hide');
 

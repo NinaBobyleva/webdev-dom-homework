@@ -5,7 +5,6 @@ export let token;
 export let name;
 export let id;
 
-// console.log(id);
 
 export const setToken = (newToken) => {
   token = newToken;
@@ -13,11 +12,6 @@ export const setToken = (newToken) => {
 export const setName = (newName) => {
   name = newName;
 }
-// export const setLike = (newId) => {
-//   id = newId;
-//   console.log(id);
-// }
-
 
 
 export const getTodos = () => {

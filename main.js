@@ -1,5 +1,4 @@
 import { getTodos } from "./api.js";
-// import { initLikeButtonListeners } from "./listeners.js";
 import { rendering, formElement, loadCommentElement, loadElement } from "./render.js";
 
 
@@ -9,7 +8,8 @@ export const setComments = (newComments) => {
     comments = newComments;
 }
 
-export const fetchAddComments = () => {
+export const fetchAddRenderComments = () => {
+    rendering(comments);
     loadElement.classList.add('show');
     formElement.classList.add('hide');
     getTodos().then((responseData) => {
@@ -33,14 +33,6 @@ export const fetchAddComments = () => {
         loadElement.textContent = 'Неудалось загрузить комментарии...';
         console.warn(error);
     })
-}
-
-export const fetchAddRenderComments = () => {
-    
-    rendering(comments);
-    
-    fetchAddComments();
-    
 }
 
 
