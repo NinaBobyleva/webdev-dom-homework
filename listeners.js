@@ -1,6 +1,7 @@
-import { sanitizeHtml, comments } from "./main.js";
+import { comments } from "./main.js";
 import { buttonElement, nameInputElement, textInputElement, rendering, formElement, loadCommentElement } from "./render.js";
 import { postLike } from "./api.js";
+import { sanitizeHtml } from "./sanitize.js";
 
 
 

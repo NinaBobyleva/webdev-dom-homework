@@ -1,4 +1,4 @@
-import { sanitizeHtml } from "./main.js";
+import { sanitizeHtml } from "./sanitize.js";
 import { updateValue, keyEvent, inputAdd, answerComment, initLikeButtonListeners } from "./listeners.js";
 import { renderLoginForm } from "./renderLogin.js";
 import { getTodos, name, postTodo } from "./api.js";
