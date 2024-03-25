@@ -8,24 +8,8 @@
 </head>
 
 <body>
-  <div class="container">
-    <span class="hide" id="load">Пожалуйста подождите, загружаю комментарии...</span>
-    <ul class="comments" id="list">
-      <!-- Список рендерится из JS -->
-    </ul>
-    <span class="hide load" id="load-comment">Комментарий загружается...</span>
-    <div class="add-form" id="form">
-      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="name-input" />
-      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
-        id="text-input"></textarea>
-      <div class="add-form-row">
-        <button class="add-form-button" id="add-button">Написать</button>
-        <button class="add-form-button" id="delete-button">Удалить комментарий</button>
-      </div>
-    </div>
-  </div>
+  <div class="container" id="app"></div>
 </body>
-
 <script type="module" src="main.js"></script>
 
 </html>
