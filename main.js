@@ -2,6 +2,7 @@ import { getTodos } from "./api.js";
 import { rendering, formElement, loadCommentElement, loadElement } from "./render.js";
 
 
+
 export let comments = [];
 
 export const setComments = (newComments) => {

@@ -2,6 +2,7 @@ import { sanitizeHtml } from "./sanitize.js";
 import { updateValue, keyEvent, inputAdd, answerComment, initLikeButtonListeners } from "./listeners.js";
 import { renderLoginForm } from "./renderLogin.js";
 import { getTodos, name, postTodo } from "./api.js";
+import { format } from "date-fns";
 
 
 export let buttonElement;
@@ -127,7 +128,7 @@ export const rendering = (comments) => {
                             return {
                                 id: comment.id,
                                 name: comment.author.name,
-                                date: new Date(comment.date).toLocaleDateString('ru-RU') + " " + new Date(comment.date).toLocaleTimeString('ru-RU'),
+                                date: format(new Date(comment.date), 'dd-MM-yyyy hh.mm.ss'),
                                 text: comment.text,
                                 likes: comment.likes,
                                 isLiked: comment.isLiked,
