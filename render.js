@@ -128,7 +128,7 @@ export const rendering = (comments) => {
                             return {
                                 id: comment.id,
                                 name: comment.author.name,
-                                date: format(new Date(comment.date), 'dd-MM-yyyy hh.mm.ss'),
+                                date: format(new Date(comment.date), 'yyyy-MM-dd hh.mm.ss'),
                                 text: comment.text,
                                 likes: comment.likes,
                                 isLiked: comment.isLiked,
